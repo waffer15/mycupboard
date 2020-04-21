@@ -95,46 +95,48 @@
     .ingredient {
         margin: 1.5rem 1rem;
         padding: 0.5rem;
-        border: 1px solid black;
         border-radius: 1rem;
         background-color: white;
         color: black;
         transition: box-shadow, transform 0.2s ease-in-out;
     }
     .ingredient:hover {
-        box-shadow: 0 0 3px black;
+        box-shadow: 0 2px 8px 0 #525151;
         transform: translateY(-2px);
     }
     .results {
         margin-left: 20rem;
+        overflow: visible;
+        word-wrap: normal;
     }
     input {
         margin: 0 1rem;
         max-height: 50%;
         padding: 0.5rem 0.5rem 0.5rem 0.9rem;
         border-radius: 1rem;
-        border: 0.5px solid black;
+        border: none;
         transition: box-shadow, transform 0.2s ease-in-out;
     }
     input:hover {
-        box-shadow: 0 0 2px black;
+        box-shadow: 0 2px 8px 0 #525151;
         transform: translateY(-1px);
     }
     input:focus {
-        box-shadow: 0 0 1px 0 #525151;
+        box-shadow: 0 0 3px #525151;
         outline: 0;
     }
     button {
         background-color: #51cf58;
-        border: 0.5px solid black;
+        border: none;
         padding: 0.5rem;
         border-radius: 0.25rem;
         color: white;
         outline: none;
+        box-shadow: 0 0 2px #525151;
         transition: box-shadow, transform 0.2s ease-in-out;
     }
     button:hover {
-        box-shadow: 0 0 2px #525151;
+        box-shadow: 0 0 4px #525151;
         transform: translateY(-1px);
     }
     h1 {
