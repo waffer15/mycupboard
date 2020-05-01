@@ -1,20 +1,27 @@
 <template>
     <div class="cupboard">
+
+        <div v-if="ingredients && ingredients.length === 0" class="empty-cupboard">
+            <img v-if="randomCocktailUrl" :src="randomCocktailUrl" class="random-drink">
+            <h1>Add some drinks to see what you can make</h1>
+        </div>
+
         <DrinkPopup v-if="showDrinkPopup" v-click-outside="closeDrinkPopup" />
         <div class="left-container">
-            <h1> Cupboard </h1>
-            <span class="add-button">
-                <button @click="updateList">Add</button>
-            </span>
-            <input v-model="ingredient" placeholder="Add ingredient" />
+            <div class="top">
+                <h1> Cupboard </h1>
+                <input v-model="ingredient" placeholder="Add ingredient" />
+                <span class="add-button">
+                    <button @click="updateIngredients">Add</button>
+                </span>
+            </div>
+            <ResultList :results="searchIngredients" :search="ingredient" @select-index="updateIngredients"/>
             <div class="ingredients">
-                <div class="ingredient" v-for="i in ingredientList" :key="i">
-                    {{i}}
-                </div>
+                <span v-for="(i, index) in ingredients" class="ingredient" :key="index">{{ ingredientLabel(i) }}</span>
             </div>
         </div>
         <div class="results">
-            <Drink v-for="drink in drinks" :drink="drink" :key="drink.idDrink" @openDrinkPopup="openDrinkPopup"/>
+            <Drink v-for="drink in drinks" :drink="drink" :key="drink._id" @openDrinkPopup="openDrinkPopup"/>
         </div>
     </div>
 </template>
@@ -23,22 +30,28 @@
     import { mapActions, mapState } from 'vuex';
     import Drink from "@/components/Drink";
     import DrinkPopup from "@/components/DrinkPopup";
+    import _ from 'lodash'
+    import ResultList from "@/components/ResultList";
     export default {
         name: "Cupboard",
-        components: {DrinkPopup, Drink},
+        components: {ResultList, DrinkPopup, Drink},
         data () {
             return {
                 ingredient: '',
-                ingredientList: [],
                 showDrinkPopup: false,
                 selectedId: null,
+                emptyImage: null,
             };
         },
         computed: {
-            ...mapState(['drinks', 'drink']),
+            ...mapState('drinks', ['drinks', 'drink', 'ingredients', 'searchIngredients']),
+            ...mapState('cocktailApi', ['randomCocktailUrl']),
+        },
+        mounted() {
+          this.getRandomCocktail();
         },
         watch: {
-            ingredientList(to) {
+            ingredients(to) {
                 if (to) {
                     this.getDrinksByIngredients({
                         params: {
@@ -47,34 +60,56 @@
                     });
                 }
             },
-            drink(to) {
+            ingredient(to) {
               if (to) {
-                  this.showDrinkPopup = true;
+                  this.getIngredientsByString({
+                      params: {
+                          name: to.toLowerCase(),
+                      }
+                  });
               }
             },
+            randomCocktailUrl(to) {
+                console.log(to)
+            }
         },
         methods: {
-            ...mapActions(['getDrinksByIngredients', 'clearDrink', 'getDrink']),
-            updateList() {
-                if (this.ingredient) {
-                    this.ingredientList = [...this.ingredientList, this.ingredient];
-                    this.ingredient = '';
+            ...mapActions('drinks', [
+                'getDrinksByIngredients',
+                'clearDrink',
+                'setDrink',
+                'addIngredient',
+                'getIngredientsByString',
+            ]),
+            ...mapActions('cocktailApi', ['getRandomCocktail']),
+            updateIngredients(ingredient) {
+                if (!ingredient.target) {
+                    this.addIngredient(ingredient.toLowerCase());
+                } else if (this.ingredient) {
+                    this.addIngredient(this.ingredient.toLowerCase());
                 }
+                this.ingredient = '';
             },
             async openDrinkPopup(drinkId) {
-                await this.getDrink({ params: { id: drinkId } });
+                const index = this.drinks.findIndex(drink => drink.drinkId === drinkId);
+                this.setDrink(index);
+                this.showDrinkPopup = true;
             },
             closeDrinkPopup() {
               this.showDrinkPopup = false;
               this.clearDrink();
             },
+            ingredientLabel(ingredient) {
+                return _.startCase(ingredient)
+            }
         }
     }
 </script>
 
 <style scoped>
+    @import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Patua+One&display=swap');
     .cupboard {
-
+        font-family: 'Patua One', sans-serif;
     }
     .left-container {
         text-align: left;
@@ -83,25 +118,28 @@
         box-shadow: 0 0 4px 0 black;
         margin-right: 1em;
         padding: 1rem;
-        background-color: #097F81;
+        background-color: #204051;
         position: fixed;
         top: 0;
         left: 0;
     }
     .ingredients {
-        display: inline;
+        margin: 1rem;
         text-align: center;
+
     }
     .ingredient {
-        margin: 1.5rem 1rem;
         padding: 0.5rem;
+        margin: 1rem 0;
         border-radius: 1rem;
         background-color: white;
-        color: black;
+        color: #656565;
+        display: block;
         transition: box-shadow, transform 0.2s ease-in-out;
     }
     .ingredient:hover {
         box-shadow: 0 2px 8px 0 #525151;
+        display: block;
         transform: translateY(-2px);
     }
     .results {
@@ -126,6 +164,7 @@
         outline: 0;
     }
     button {
+        font-family: 'PT Sans', sans-serif;
         background-color: #51cf58;
         border: none;
         padding: 0.5rem;
@@ -142,10 +181,23 @@
     h1 {
         margin-left: 3rem;
     }
-    img {
-        position: relative;
-        top: 0.5rem;
-        max-width: 30px;
-        max-height: 30px;
+    .empty-cupboard {
+        margin-left: 35%;
+        margin-top: 10rem;
+        border-radius: 2rem;
+        text-align: center;
+        font-family: 'PT Sans', sans-serif;
+        width: 40rem;
+        height: auto;
+        color: black;
+        padding: 1rem;
+        background-color: white;
+        position: fixed;
+    }
+    .random-drink {
+        width: 250px;
+        height: 250px;
+        margin: 1rem;
+        border-radius: 2rem;
     }
 </style>

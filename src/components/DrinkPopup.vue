@@ -1,19 +1,23 @@
 <template>
     <div v-if="!pending.drink" class="container">
-        <img class="pic" :src="imgSrc" />
-        <div  class="drink-container">
-            <h2 class="ingredient-title"> What you need... </h2>
-            <div class="ingredient-list">
-                <ul>
-                    <li v-for="(ingredient, index) in ingredients" :key="index">
-                        {{ingredient.measure ? ingredient.measure + 'of ' : ''}}
-                        {{ingredient.ingredient }}
-                    </li>
-                </ul>
+        <div  class="top-section">
+            <img class="pic" :src="imgSrc" />
+            <div class="ingredients">
+                <h2 class="ingredient-title"> Ingredients </h2>
+                <div class="ingredient-list">
+                    <ul>
+                        <li v-for="(ingredient, index) in ingredients" :key="index">
+                            {{ingredient.measure ? ingredient.measure + 'of ' : ''}}
+                            {{ingredient.ingredient }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="drink-details">
             <h2 class="name"> {{name}} </h2>
+            <h3>How To Make:</h3>
+            <p class="description"> {{ instructions }}</p>
         </div>
     </div>
 </template>
@@ -24,27 +28,20 @@
         name: "DrinkPopup",
         props: {},
         computed: {
-          ...mapState(['drink', 'pending']),
+          ...mapState('drinks', ['drink', 'pending']),
             ingredients() {
-              let ingredients = [];
-              // json has up to 15 separate properties
-              for (let i = 1; i <= 15; i += 1) {
-                  const cur = this.drink[`strIngredient${i}`];
-                  if (cur) {
-                      ingredients.push(cur);
-                  } else {
-                      break;
-                  }
-              }
-              return ingredients.map((ingredient, index) => {
-                  return { ingredient, measure: this.drink[`strMeasure${index + 1}`] };
+              return this.drink.ingredients.map((ingredient, index) => {
+                  return { ingredient, measure: this.drink.measurements[index] };
               });
             },
             name() {
-              return this.drink && this.drink.strDrink;
+              return this.drink && this.drink.name;
             },
             imgSrc() {
-              return this.drink && this.drink.strDrinkThumb;
+              return this.drink && this.drink.thumb;
+            },
+            instructions() {
+              return this.drink && this.drink.instructions;
             },
         },
     }
@@ -54,15 +51,16 @@
     .container {
         position: fixed;
         height: 35em;
-        width: auto;
+        width: min-content;
+        padding: 1rem;
         z-index: 10;
-        margin: 5em 25%;
-        background-color: #F9EEA3;
+        margin: 5em 35%;
+        background-color: whitesmoke;
         border-radius: 1rem;
         box-shadow: 0 0 11px 3px black;
         color: #5c5c5c
     }
-    .drink-container {
+    .top-section {
         display: inline-flex;
     }
     .drink-details {
@@ -78,11 +76,24 @@
     .ingredient-list {
         width: max-content;
         margin: 1rem;
-        box-shadow: 0 0 8px 1px black;
         border-radius: 0.5rem;
         background-color: white;
+        height: 75%;
+        padding-top: 0.5rem;
+        padding-right: 0.5rem;
+        display: inline-block;
+        text-align: left;
     }
     .ingredient-title {
         margin: 0.5rem;
+    }
+    .ingredients {
+        text-align: center;
+    }
+    .description {
+        padding: 0.5rem;
+        min-height: 5rem;
+        background-color: white;
+        border-radius: 0.75rem;
     }
 </style>

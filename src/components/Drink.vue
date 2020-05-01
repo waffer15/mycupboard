@@ -2,6 +2,7 @@
     <span class="drink" @click.stop="selectDrink">
         <img class="thumb" :src="imgSrc"/>
         <p class="text">{{ name }}</p>
+        <p class="missing" :class="{ 'ready': missing === 0, 'not-ready': missing > 0 }"> {{ missingLabel }}</p>
     </span>
 </template>
 
@@ -11,15 +12,30 @@
         props: {
             drink: { type: Object, default: () => {} },
         },
-        data() {
-            return {
-                imgSrc: this.drink.strDrinkThumb || '',
-                name: this.drink.strDrink || '',
+        computed: {
+            imgSrc() {
+                return this.drink && this.drink.thumb;
+            },
+            name() {
+              return this.drink && this.drink.name;
+            },
+            missingLabel() {
+              if (this.drink) {
+                  if (this.missing === 0) {
+                      return 'Ready to make';
+                  } else {
+                      return `Missing ${this.missing} ingredient${this.missing > 1 ? 's' : ''}`
+                  }
+              }
+              return '';
+            },
+            missing() {
+                return this.drink && this.drink.missing.length;
             }
         },
         methods: {
           selectDrink() {
-              this.$emit('openDrinkPopup', Number(this.drink.idDrink));
+              this.$emit('openDrinkPopup', Number(this.drink.drinkId));
           },
         },
     }
@@ -48,5 +64,17 @@
     border-radius: 0.75rem;
     vertical-align: middle;
     margin: 1rem;
+}
+.missing {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    color: black;
+    border-radius: 0.5rem;
+}
+.ready {
+    background-color: #71ff86;
+}
+.not-ready {
+    background-color: #ffa2a2;
 }
 </style>

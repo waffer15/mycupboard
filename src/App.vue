@@ -25,7 +25,7 @@ export default {
 }
 html {
   height: 100%;
-  background-color: #78B89E;
+  background-color: #84a9ac;
 }
 body {
   height: 100%;
