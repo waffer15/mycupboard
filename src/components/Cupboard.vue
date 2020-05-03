@@ -54,7 +54,13 @@
             ...mapState('cocktailApi', ['randomCocktailUrl']),
         },
         mounted() {
-          this.getRandomCocktail();
+            if (localStorage.getItem('ingredients')) {
+                // local storage saves as comma separated values
+                this.setIngredients(localStorage.getItem('ingredients').split(','));
+            } else {
+                // if we don't have ingredients saved, want a random cocktail to display
+                this.getRandomCocktail();
+            }
         },
         watch: {
             ingredients(to) {
@@ -64,7 +70,12 @@
                             ingredients:  to.toString(),
                         },
                     });
+                } else {
+                    // get random cocktail to display if no ingredients
+                    this.getRandomCocktail();
                 }
+                // save ingredients to browser storage
+                localStorage.setItem('ingredients', to);
             },
             ingredient(to) {
               if (to) {
@@ -87,6 +98,7 @@
                 'addIngredient',
                 'removeIngredient',
                 'getIngredientsByString',
+                'setIngredients',
             ]),
             ...mapActions('cocktailApi', ['getRandomCocktail']),
             updateIngredients(ingredient) {
@@ -133,7 +145,6 @@
     .ingredients {
         margin: 1rem;
         text-align: center;
-
     }
     .ingredient {
         padding: 0.5rem;

@@ -100,6 +100,9 @@ const actions = {
     addIngredient({ commit }, ingredient) {
         commit(types.ADD_INGREDIENT, ingredient);
     },
+    setIngredients({ commit }, ingredients) {
+      commit(types.SET_INGREDIENTS, ingredients);
+    },
     removeIngredient({ commit }, index) {
         commit(types.REMOVE_INGREDIENT, index);
     },
@@ -115,6 +118,9 @@ const mutations = {
     [types.ADD_INGREDIENT](state, ingredient) {
         state.ingredients.push(ingredient);
         state.searchIngredients = [];
+    },
+    [types.SET_INGREDIENTS](state, ingredients) {
+        state.ingredients = ingredients;
     },
     [types.REMOVE_INGREDIENT](state, index) {
         state.ingredients.splice(index, 1);
