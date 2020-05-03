@@ -5,7 +5,6 @@
             <img v-if="randomCocktailUrl" :src="randomCocktailUrl" class="random-drink">
             <h1>Add some drinks to see what you can make</h1>
         </div>
-
         <DrinkPopup v-if="showDrinkPopup" v-click-outside="closeDrinkPopup" />
         <div class="left-container">
             <div class="top">
@@ -17,7 +16,14 @@
             </div>
             <ResultList :results="searchIngredients" :search="ingredient" @select-index="updateIngredients"/>
             <div class="ingredients">
-                <span v-for="(i, index) in ingredients" class="ingredient" :key="index">{{ ingredientLabel(i) }}</span>
+                <span
+                        v-for="(i, index) in ingredients"
+                        :key="index" class="ingredient"
+                        @click="removeIngredient(index)"
+                >
+                    <span>{{ ingredientLabel(i) }}</span>
+                    <fa-icon icon="minus-circle" class="icon"/>
+                </span>
             </div>
         </div>
         <div class="results">
@@ -52,7 +58,7 @@
         },
         watch: {
             ingredients(to) {
-                if (to) {
+                if (to.length > 0) {
                     this.getDrinksByIngredients({
                         params: {
                             ingredients:  to.toString(),
@@ -79,6 +85,7 @@
                 'clearDrink',
                 'setDrink',
                 'addIngredient',
+                'removeIngredient',
                 'getIngredientsByString',
             ]),
             ...mapActions('cocktailApi', ['getRandomCocktail']),
@@ -101,7 +108,7 @@
             },
             ingredientLabel(ingredient) {
                 return _.startCase(ingredient)
-            }
+            },
         }
     }
 </script>
@@ -142,6 +149,9 @@
         display: block;
         transform: translateY(-2px);
     }
+    .ingredient:hover * {
+        opacity: 1;
+    }
     .results {
         margin-left: 20rem;
         overflow: visible;
@@ -164,6 +174,7 @@
         outline: 0;
     }
     button {
+        cursor: pointer;
         font-family: 'PT Sans', sans-serif;
         background-color: #51cf58;
         border: none;
@@ -199,5 +210,17 @@
         height: 250px;
         margin: 1rem;
         border-radius: 2rem;
+    }
+    .icon {
+        top: 0.6rem;
+        position: fixed;
+        left: 0.8rem;
+        color: grey;
+        opacity: 0;
+        transition: opacity 0.2s linear;
+    }
+    .icon:hover {
+        color: red;
+        cursor: pointer;
     }
 </style>

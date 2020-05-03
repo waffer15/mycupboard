@@ -50,11 +50,11 @@
 <style scoped>
     .container {
         position: fixed;
-        height: 35em;
+        min-height: 35em;
         width: min-content;
         padding: 1rem;
         z-index: 10;
-        margin: 5em 35%;
+        margin: 1em 35%;
         background-color: whitesmoke;
         border-radius: 1rem;
         box-shadow: 0 0 11px 3px black;

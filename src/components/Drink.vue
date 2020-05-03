@@ -57,6 +57,7 @@
 .drink:hover {
     box-shadow: 0 3px 5px 2px #525151;
     transform: translateY(-3px);
+    cursor: pointer;
 }
 .thumb {
     max-width: 150px;

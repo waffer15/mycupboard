@@ -46,6 +46,8 @@ export default {
     margin: 0.5rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 6px black;
+    width: 15rem;
+    position: fixed;
 }
 .result {
     display: block;
@@ -63,6 +65,7 @@ export default {
     border: none;
 }
 .result:hover {
+    cursor: pointer;
     background-color: #e0e0e0;
 }
 </style>
