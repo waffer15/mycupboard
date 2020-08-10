@@ -1,14 +1,24 @@
 <template>
-    <span class="drink" @click.stop="selectDrink">
-        <img class="thumb" :src="imgSrc"/>
+    <div class="drink" @click.stop="selectDrink">
+        <RadarSpinner
+            v-if="!imgSrc"
+            :animation-duration="1000"
+            :size="150"
+            color="grey"
+        />
+        <img v-else class="thumb" :src="imgSrc"/>
         <p class="text">{{ name }}</p>
         <p class="missing" :class="{ 'ready': missing === 0, 'not-ready': missing > 0 }"> {{ missingLabel }}</p>
-    </span>
+    </div>
 </template>
 
 <script>
+    import { RadarSpinner } from 'epic-spinners';
     export default {
         name: "Drink",
+        components: {
+            RadarSpinner,
+        },
         props: {
             drink: { type: Object, default: () => {} },
         },

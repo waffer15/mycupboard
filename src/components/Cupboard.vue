@@ -2,6 +2,13 @@
     <div class="cupboard">
 
         <div v-if="ingredients && ingredients.length === 0" class="empty-cupboard">
+            <div v-if="!randomCocktailUrl" class="spinner">
+                <HalfCircleSpinner
+                    :animation-duration="1000"
+                    :size="100"
+                    color="grey"
+                />
+            </div>
             <img v-if="randomCocktailUrl" :src="randomCocktailUrl" class="random-drink">
             <h1>Add some drinks to see what you can make</h1>
         </div>
@@ -38,9 +45,11 @@
     import DrinkPopup from "@/components/DrinkPopup";
     import _ from 'lodash'
     import ResultList from "@/components/ResultList";
+    import { HalfCircleSpinner } from 'epic-spinners';
+
     export default {
         name: "Cupboard",
-        components: {ResultList, DrinkPopup, Drink},
+        components: { ResultList, DrinkPopup, Drink, HalfCircleSpinner },
         data () {
             return {
                 ingredient: '',
@@ -233,5 +242,12 @@
     .icon:hover {
         color: red;
         cursor: pointer;
+    }
+    .spinner {
+        text-align: -webkit-center;
+        width: 250px;
+        margin-left: 12rem;
+        padding-top: 60px;
+        height: 190px;
     }
 </style>
